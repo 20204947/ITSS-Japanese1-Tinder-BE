@@ -1,0 +1,20 @@
+{
+  "name": "itss-japanese1-tinder-be",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">\r   <div>\r   <img src=\"https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB\" alt=\"react.js\" />\r   <img src=\"https://img.shields.io/badge/-Typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6\" alt=\"typescript\" />\r     <img src=\"https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white\" alt=\"tailwindcss\" />\r   </div>\r </div>",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.4",
+    "sequelize": "^6.37.5"
+  }
+}
