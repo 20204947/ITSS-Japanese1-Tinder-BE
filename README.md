@@ -6,7 +6,7 @@
   </div>
 </div>
 
-<h1 align="center">Tinder Front End App</h1>
+<h1 align="center">Tinder Back End App</h1>
 
 ## 📋 <a name="table">Table of Contents</a>
 
