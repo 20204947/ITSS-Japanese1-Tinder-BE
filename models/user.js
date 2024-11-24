@@ -28,7 +28,7 @@ const User = sequelize.define('User', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    DOB: {
+    dob: {
         type: DataTypes.DATEONLY,
         allowNull: false
     }
