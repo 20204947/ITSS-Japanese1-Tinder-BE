@@ -1,11 +1,54 @@
 Tạo DB với bảng user như sau
 
-
-CREATE TABLE Users (
-    userID INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    gender TINYINT NOT NULL,
-    DOB DATE NOT NULL
+CREATE TABLE `User`(
+    `userID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `email` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `gender` INT NOT NULL,
+    `dob` DATE NOT NULL,
+    `role` BIGINT NOT NULL,
+    `firstFavouriteID` BIGINT NULL,
+    `secondFavouriteID` BIGINT NULL,
+    `thirdFavouriteID` BIGINT NULL,
+    `fourthFavouriteID` BIGINT NULL,
+    `fifthFavouriteID` BIGINT NULL
+);
+CREATE TABLE `Favourite`(
+    `favouriteID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `favouriteName` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `Action`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `userID` BIGINT NOT NULL,
+    `targetUserID` BIGINT NOT NULL,
+    `action` INT NOT NULL,
+    CONSTRAINT `action_userid_foreign` FOREIGN KEY(`userID`) REFERENCES `User`(`userID`),
+    CONSTRAINT `action_targetuserid_foreign` FOREIGN KEY(`targetUserID`) REFERENCES `User`(`userID`)
+);
+CREATE TABLE `Matching`(
+    `matchingID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `userA` BIGINT NOT NULL,
+    `userB` BIGINT NOT NULL,
+    `status` BIGINT NOT NULL,
+    `messageID` BIGINT NOT NULL,
+    CONSTRAINT `matching_messageid_foreign` FOREIGN KEY(`messageID`) REFERENCES `Message`(`messageID`)
+);
+CREATE TABLE `Event`(
+    `eventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `eventName` VARCHAR(255) NOT NULL,
+    `eventTime` TIME NOT NULL
+);
+CREATE TABLE `JoinEvent`(
+    `joinEventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `userID` BIGINT NOT NULL,
+    `eventID` BIGINT NOT NULL,
+    CONSTRAINT `joinevent_userid_foreign` FOREIGN KEY(`userID`) REFERENCES `User`(`userID`),
+    CONSTRAINT `joinevent_eventid_foreign` FOREIGN KEY(`eventID`) REFERENCES `Event`(`eventID`)
+);
+CREATE TABLE `Message`(
+    `messageID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `from` BIGINT NOT NULL,
+    `time` TIME NOT NULL,
+    `context` BIGINT NOT NULL
 );

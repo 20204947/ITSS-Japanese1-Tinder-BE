@@ -7,7 +7,7 @@ const OTHER = 2;
 
 const User = sequelize.define('User', {
     userID: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT.UNSIGNED,
         autoIncrement: true,
         primaryKey: true
     },
@@ -31,9 +31,34 @@ const User = sequelize.define('User', {
     dob: {
         type: DataTypes.DATEONLY,
         allowNull: false
+    },
+    role: {
+        type: DataTypes.BIGINT,
+        allowNull: false
+    },
+    firstFavouriteID: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
+    secondFavouriteID: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
+    thirdFavouriteID: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
+    fourthFavouriteID: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
+    fifthFavouriteID: {
+        type: DataTypes.BIGINT,
+        allowNull: true
     }
 }, {
-    timestamps: false
+    tableName: 'User', // Đảm bảo Sequelize sử dụng đúng tên bảng
+    timestamps: false // Bỏ qua các cột mặc định như createdAt, updatedAt
 });
 
 module.exports = User;
