@@ -50,6 +50,7 @@ exports.login = async (req, res) => {
             role: user.role,
             gender: user.gender,
             dob: user.dob,
+            imageURL: user.imageURL,
             firstFavouriteID: favouriteNames[0],
             secondFavouriteID: favouriteNames[1],
             thirdFavouriteID: favouriteNames[2],

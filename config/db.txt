@@ -8,6 +8,7 @@ CREATE TABLE `User`(
     `gender` INT NOT NULL,
     `dob` DATE NOT NULL,
     `role` BIGINT NOT NULL,
+    `imageURL` VARCHAR(255) NULL,
     `firstFavouriteID` BIGINT NULL,
     `secondFavouriteID` BIGINT NULL,
     `thirdFavouriteID` BIGINT NULL,

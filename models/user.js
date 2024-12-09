@@ -36,6 +36,10 @@ const User = sequelize.define('User', {
         type: DataTypes.BIGINT,
         allowNull: false
     },
+    imageURL: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     firstFavouriteID: {
         type: DataTypes.BIGINT,
         allowNull: true
