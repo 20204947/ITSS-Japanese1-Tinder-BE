@@ -44,7 +44,7 @@ exports.login = async (req, res) => {
         const favouriteNames = favourites.map(fav => fav.favouriteName);
         // Lưu thông tin user vào session
         req.session.user = {
-            id: user.id,
+            userID: user.userID,
             email: user.email,
             name: user.name,
             role: user.role,
@@ -64,12 +64,141 @@ exports.login = async (req, res) => {
     }
 };
 
-exports.profile = (req, res) => {
-    if (req.session.user) {
-        return res.status(200).json({ message: 'User logged in', user: req.session.user });
+
+// Lấy thông tin người dùng
+exports.profile = async (req, res) => {
+    try {
+        // Kiểm tra xem session có tồn tại không
+        const userID = req.session?.user?.userID;
+        if (!userID) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
+        }
+
+        // Truy vấn thông tin người dùng từ DB
+        const user = await User.findByPk(userID);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Trả về thông tin người dùng
+        return res.status(200).json({
+            message: "User profile retrieved successfully",
+            user: {
+                userID: user.userID,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                gender: user.gender,
+                dob: user.dob,
+                imageURL: user.imageURL,
+                firstFavouriteID: user.firstFavouriteID,
+                secondFavouriteID: user.secondFavouriteID,
+                thirdFavouriteID: user.thirdFavouriteID,
+                fourthFavouriteID: user.fourthFavouriteID,
+                fifthFavouriteID: user.fifthFavouriteID,
+            },
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Error retrieving user profile",
+            error: err.message,
+        });
     }
-    res.status(401).json({ message: 'User not logged in' });
-}
+};
+
+// Cập nhật thông tin người dùng
+exports.updateProfile = async (req, res) => {
+    try {
+        // Kiểm tra xem session có tồn tại không
+        const userID = req.session?.user?.userID;
+        if (!userID) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
+        }
+
+        // Lấy người dùng từ DB
+        const user = await User.findByPk(userID);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Lấy dữ liệu từ body request
+        const { name, email, gender, dob, imageURL } = req.body;
+
+        // Cập nhật từng trường nếu có
+        if (name !== undefined) {
+            user.name = name;
+        }
+
+        if (email !== undefined) {
+            // Kiểm tra email có hợp lệ và có bị trùng không
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                return res.status(400).json({ message: "Invalid email format" });
+            }
+
+            const existingUser = await User.findOne({ where: { email } });
+            if (existingUser && existingUser.userID !== userID) {
+                return res.status(400).json({ message: "Email is already taken" });
+            }
+
+            user.email = email;
+        }
+
+        if (gender !== undefined) {
+            const parsedGender = parseInt(gender, 10); // Chuyển chuỗi thành số
+            if (![0, 1, 2].includes(parsedGender)) {
+                return res.status(400).json({ message: "Invalid gender value" });
+            }
+            user.gender = parsedGender;
+        }
+
+
+        if (dob !== undefined) {
+            if (isNaN(new Date(dob).getTime())) {
+                return res.status(400).json({ message: "Invalid date format for DOB" });
+            }
+            user.dob = dob;
+        }
+
+        if (imageURL !== undefined) {
+            user.imageURL = imageURL;
+        }
+
+        // Lưu thay đổi vào DB
+        await user.save();
+
+        // Cập nhật session (nếu cần)
+        req.session.user = {
+            ...req.session.user,
+            name: user.name,
+            email: user.email,
+            gender: user.gender,
+            dob: user.dob,
+            imageURL: user.imageURL,
+        };
+
+        return res.status(200).json({
+            message: "User profile updated successfully",
+            user: {
+                userID: user.userID,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                gender: user.gender,
+                dob: user.dob,
+                imageURL: user.imageURL,
+            },
+        });
+    } catch (err) {
+        const isDev = process.env.NODE_ENV === "development";
+        return res.status(500).json({
+            message: "Error updating user profile",
+            error: isDev ? err.message : "Internal server error",
+        });
+    }
+};
+
+
+
 
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
