@@ -21,7 +21,7 @@ const Matching = sequelize.define('Matching', {
     },
     messageID: {
         type: DataTypes.BIGINT,
-        allowNull: false
+        allowNull: true
     }
 }, {
     tableName: 'Matching',

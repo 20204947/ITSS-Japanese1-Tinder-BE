@@ -1,6 +1,8 @@
 const User = require('../models/user');
-const Favourites = require('../models/favourite');
-
+const Favorites = require('../models/favourite');
+const Action = require('../models/action');
+const Matching = require('../models/matching');
+const { Op } = require('sequelize');
 
 exports.register = async (req, res) => {
     const { email, password, name, gender, role, dob } = req.body;
@@ -21,15 +23,15 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
-
+    
     try {
         const user = await User.findOne({ where: { email, password } });
-
+        
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
         // Truy vấn FavouriteName dựa trên FavouriteID
-        const favourites = await Favourites.findAll({
+        const favourites = await Favorites.findAll({
             where: {
                 favouriteID: [
                     user.firstFavouriteID,
@@ -57,7 +59,7 @@ exports.login = async (req, res) => {
             fourthFavouriteID: favouriteNames[3],
             fifthFavouriteID: favouriteNames[4],
         };
-
+        
         res.status(200).json({ message: 'Login successful', user });
     } catch (err) {
         res.status(500).json({ message: 'Error logging in', error: err.message });
@@ -208,3 +210,113 @@ exports.logout = (req, res) => {
         res.status(200).json({ message: "Logout successful" });
     });
 }
+
+exports.getMatchingUsers = async (req, res) => {
+    try {                
+        const currentUserID = req.session?.user?.userID;        
+        if (!currentUserID) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
+        }
+
+        const actions = await Action.findAll({
+            where: { userID: currentUserID },
+            attributes: ['targetUserID']
+        });
+
+        const actionedUserIDs = actions.map(action => action.targetUserID);
+
+        const matchingUsers = await User.findAll({
+            where: {
+                userID: {
+                    [Op.notIn]: actionedUserIDs,
+                    [Op.ne]: currentUserID
+                }
+            },
+            attributes: [
+                'userID', // ID người dùng
+                'name', // Tên người dùng
+                'role', // Vai trò người dùng
+                'imageURL', // Avatar người dùng
+                'firstFavouriteID', // ID sở thích đầu tiên
+                'secondFavouriteID', // ID sở thích thứ hai
+                'thirdFavouriteID', // ID sở thích thứ ba
+                'fourthFavouriteID', // ID sở thích thứ tư
+                'fifthFavouriteID' // ID sở thích thứ năm
+            ]
+        });
+
+        // Lấy tên sở thích từ các ID sở thích
+        const transformedUsers = await Promise.all(matchingUsers.map(async (user) => {
+            // Lấy tên các sở thích từ bảng Favorite bằng ID
+            const firstFavorite = await Favorites.findByPk(user.firstFavouriteID);
+            const secondFavorite = await Favorites.findByPk(user.secondFavouriteID);
+            const thirdFavorite = await Favorites.findByPk(user.thirdFavouriteID);
+            const fourthFavorite = await Favorites.findByPk(user.fourthFavouriteID);
+            const fifthFavorite = await Favorites.findByPk(user.fifthFavouriteID);
+
+            return {
+                userID: user.userID,
+                name: user.name,
+                role: user.role,
+                avatar: user.imageURL,
+                favorites: [
+                    firstFavorite ? firstFavorite.favouriteName : null,
+                    secondFavorite ? secondFavorite.favouriteName : null,
+                    thirdFavorite ? thirdFavorite.favouriteName : null,
+                    fourthFavorite ? fourthFavorite.favouriteName : null,
+                    fifthFavorite ? fifthFavorite.favouriteName : null
+                ]
+            };
+        }));
+
+        res.status(200).json({ message: 'Matching users retrieved successfully', users: transformedUsers });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Error getting matching users', error: error.message });
+    }
+}
+
+exports.likeOrDislike = async (req, res) => {
+    const { targetUserID, action } = req.body;
+    const currentUserID = req.session?.user?.userID;
+    if (!currentUserID) {
+        return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    try {
+        const newAction = await Action.create({
+            userID: currentUserID,
+            targetUserID: targetUserID,
+            action: action
+        });
+
+        const existingAction = await Action.findOne({
+            where: {
+                userID: targetUserID,
+                targetUserID: currentUserID
+            }
+        });
+
+        if (existingAction) {        
+            if (action === 1 && existingAction.action === 1) {
+                const matching = await Matching.create({
+                    userA: currentUserID,
+                    userB: targetUserID,
+                    status: 1,
+                    messageID: null
+                });
+                
+                return res.status(200).json({
+                    message: "Action updated successfully and a match was created",
+                    match: matching
+                });
+
+            }
+        }
+
+        res.status(201).json({ message: "Action saved successfully", action: newAction });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error processing action', error: err.message });
+    }
+};

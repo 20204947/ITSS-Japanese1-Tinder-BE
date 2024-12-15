@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+const LIKE = 1;
+const DISLIKE = 0;
+
 const Action = sequelize.define('Action', {
     id: {
         type: DataTypes.BIGINT.UNSIGNED,

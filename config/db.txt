@@ -32,7 +32,7 @@ CREATE TABLE `Matching`(
     `userA` BIGINT NOT NULL,
     `userB` BIGINT NOT NULL,
     `status` BIGINT NOT NULL,
-    `messageID` BIGINT NOT NULL,
+    `messageID` BIGINT,
     CONSTRAINT `matching_messageid_foreign` FOREIGN KEY(`messageID`) REFERENCES `Message`(`messageID`)
 );
 CREATE TABLE `Event`(
