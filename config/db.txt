@@ -32,8 +32,6 @@ CREATE TABLE `Matching`(
     `userA` BIGINT NOT NULL,
     `userB` BIGINT NOT NULL,
     `status` BIGINT NOT NULL,
-    `messageID` BIGINT,
-    CONSTRAINT `matching_messageid_foreign` FOREIGN KEY(`messageID`) REFERENCES `Message`(`messageID`)
 );
 CREATE TABLE `Event`(
     `eventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -49,7 +47,9 @@ CREATE TABLE `JoinEvent`(
 );
 CREATE TABLE `Message`(
     `messageID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `matchingID` BIGINT,
     `from` BIGINT NOT NULL,
     `time` TIME NOT NULL,
     `context` BIGINT NOT NULL
+    CONSTRAINT `message_matchingid_foreign` FOREIGN KEY(`matchingID`) REFERENCES `Matching`(`matchingID`)
 );

@@ -23,10 +23,10 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
-    
+
     try {
         const user = await User.findOne({ where: { email, password } });
-        
+
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
             fourthFavouriteID: favouriteNames[3],
             fifthFavouriteID: favouriteNames[4],
         };
-        
+
         res.status(200).json({ message: 'Login successful', user });
     } catch (err) {
         res.status(500).json({ message: 'Error logging in', error: err.message });
@@ -212,8 +212,8 @@ exports.logout = (req, res) => {
 }
 
 exports.getMatchingUsers = async (req, res) => {
-    try {                
-        const currentUserID = req.session?.user?.userID;        
+    try {
+        const currentUserID = req.session?.user?.userID;
         if (!currentUserID) {
             return res.status(401).json({ message: "Unauthorized. Please log in." });
         }
@@ -297,15 +297,14 @@ exports.likeOrDislike = async (req, res) => {
             }
         });
 
-        if (existingAction) {        
+        if (existingAction) {
             if (action === 1 && existingAction.action === 1) {
                 const matching = await Matching.create({
                     userA: currentUserID,
                     userB: targetUserID,
                     status: 1,
-                    messageID: null
                 });
-                
+
                 return res.status(200).json({
                     message: "Action updated successfully and a match was created",
                     match: matching
