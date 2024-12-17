@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require("express");
 const session = require("express-session");
-const bodyParser = require('body-parser');
-const userRoutes = require('./routes/userRoutes');
-const cors = require('cors');
+const bodyParser = require("body-parser");
+const userRoutes = require("./routes/userRoutes");
+const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,6 +15,13 @@ app.use(
         credentials: true, // Cho phép gửi cookie qua cross-origin
     })
 );
+app.options(
+    "*",
+    cors({
+        origin: "http://localhost:5173",
+        credentials: true,
+    })
+);
 // Cấu hình session
 app.use(
     session({
@@ -25,7 +32,7 @@ app.use(
     })
 );
 
-app.use('/api/users', userRoutes);
+app.use("/api/users", userRoutes);
 
 const PORT = 8888;
 app.listen(PORT, () => {
