@@ -44,6 +44,7 @@ exports.login = async (req, res) => {
         });
 
         const favouriteNames = favourites.map(fav => fav.favouriteName);
+
         // Lưu thông tin user vào session
         req.session.user = {
             userID: user.userID,
@@ -53,11 +54,11 @@ exports.login = async (req, res) => {
             gender: user.gender,
             dob: user.dob,
             imageURL: user.imageURL,
-            firstFavouriteID: favouriteNames[0],
-            secondFavouriteID: favouriteNames[1],
-            thirdFavouriteID: favouriteNames[2],
-            fourthFavouriteID: favouriteNames[3],
-            fifthFavouriteID: favouriteNames[4],
+            firstFavourite: favouriteNames[0],
+            secondFavourite: favouriteNames[1],
+            thirdFavourite: favouriteNames[2],
+            fourthFavourite: favouriteNames[3],
+            fifthFavourite: favouriteNames[4],
         };
 
         res.status(200).json({ message: 'Login successful', user });
@@ -82,6 +83,22 @@ exports.profile = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Lấy tên sở thích từ các ID sở thích
+        const favourites = await Favorites.findAll({
+            where: {
+                favouriteID: [
+                    user.firstFavouriteID,
+                    user.secondFavouriteID,
+                    user.thirdFavouriteID,
+                    user.fourthFavouriteID,
+                    user.fifthFavouriteID
+                ].filter(id => id !== null), // Loại bỏ giá trị null nếu không có ID
+            },
+        });
+        const favouriteNames = favourites.map(fav => fav.favouriteName);
+
+
+
         // Trả về thông tin người dùng
         return res.status(200).json({
             message: "User profile retrieved successfully",
@@ -93,11 +110,11 @@ exports.profile = async (req, res) => {
                 gender: user.gender,
                 dob: user.dob,
                 imageURL: user.imageURL,
-                firstFavouriteID: user.firstFavouriteID,
-                secondFavouriteID: user.secondFavouriteID,
-                thirdFavouriteID: user.thirdFavouriteID,
-                fourthFavouriteID: user.fourthFavouriteID,
-                fifthFavouriteID: user.fifthFavouriteID,
+                firstFavourite: favouriteNames[0],
+                secondFavourite: favouriteNames[1],
+                thirdFavourite: favouriteNames[2],
+                fourthFavourite: favouriteNames[3],
+                fifthFavourite: favouriteNames[4],
             },
         });
     } catch (err) {
@@ -124,25 +141,11 @@ exports.updateProfile = async (req, res) => {
         }
 
         // Lấy dữ liệu từ body request
-        const { name, email, gender, dob, imageURL } = req.body;
+        const { name, gender, dob, imageURL, favourites } = req.body;
 
         // Cập nhật từng trường nếu có
         if (name !== undefined) {
             user.name = name;
-        }
-
-        if (email !== undefined) {
-            // Kiểm tra email có hợp lệ và có bị trùng không
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                return res.status(400).json({ message: "Invalid email format" });
-            }
-
-            const existingUser = await User.findOne({ where: { email } });
-            if (existingUser && existingUser.userID !== userID) {
-                return res.status(400).json({ message: "Email is already taken" });
-            }
-
-            user.email = email;
         }
 
         if (gender !== undefined) {
@@ -163,6 +166,14 @@ exports.updateProfile = async (req, res) => {
 
         if (imageURL !== undefined) {
             user.imageURL = imageURL;
+        }
+
+        if (favourites !== undefined) {
+            user.firstFavouriteID = favourites[0];
+            user.secondFavouriteID = favourites[1];
+            user.thirdFavouriteID = favourites[2];
+            user.fourthFavouriteID = favourites[3];
+            user.fifthFavouriteID = favourites[4];
         }
 
         // Lưu thay đổi vào DB
@@ -188,6 +199,11 @@ exports.updateProfile = async (req, res) => {
                 gender: user.gender,
                 dob: user.dob,
                 imageURL: user.imageURL,
+                firstFavouriteID: favourites[0],
+                secondFavouriteID: favourites[1],
+                thirdFavouriteID: favourites[2],
+                fourthFavouriteID: favourites[3],
+                fifthFavouriteID: favourites[4],
             },
         });
     } catch (err) {

@@ -18,10 +18,6 @@ const Matching = sequelize.define('Matching', {
     status: {
         type: DataTypes.BIGINT,
         allowNull: false
-    },
-    messageID: {
-        type: DataTypes.BIGINT,
-        allowNull: true
     }
 }, {
     tableName: 'Matching',

@@ -7,6 +7,10 @@ const Message = sequelize.define('Message', {
         autoIncrement: true,
         primaryKey: true
     },
+    matchingID: {
+        type: DataTypes.BIGINT,
+        allowNull: false
+    },
     from: {
         type: DataTypes.BIGINT,
         allowNull: false
