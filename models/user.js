@@ -4,6 +4,8 @@ const sequelize = require('../config/database');
 const MALE = 0;
 const FEMALE = 1;
 const OTHER = 2;
+const TEACHER = 0;
+const STUDENT = 1;
 
 const User = sequelize.define('User', {
     userID: {
