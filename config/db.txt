@@ -1,6 +1,4 @@
-Tạo DB với bảng user như sau
-
-CREATE TABLE `User`(
+CREATE TABLE `User` (
     `userID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `email` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
@@ -9,42 +7,48 @@ CREATE TABLE `User`(
     `dob` DATE NOT NULL,
     `role` BIGINT NOT NULL,
     `imageURL` VARCHAR(255) NULL,
-    `firstFavouriteID` BIGINT NULL,
-    `secondFavouriteID` BIGINT NULL,
-    `thirdFavouriteID` BIGINT NULL,
-    `fourthFavouriteID` BIGINT NULL,
-    `fifthFavouriteID` BIGINT NULL
+    `firstFavouriteID` BIGINT UNSIGNED NULL,
+    `secondFavouriteID` BIGINT UNSIGNED NULL,
+    `thirdFavouriteID` BIGINT UNSIGNED NULL,
+    `fourthFavouriteID` BIGINT UNSIGNED NULL,
+    `fifthFavouriteID` BIGINT UNSIGNED NULL
 );
-CREATE TABLE `Favourite`(
+
+CREATE TABLE `Favourite` (
     `favouriteID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `favouriteName` VARCHAR(255) NOT NULL
 );
-CREATE TABLE `Action`(
+
+CREATE TABLE `Action` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `userID` BIGINT NOT NULL,
-    `targetUserID` BIGINT NOT NULL,
+    `userID` BIGINT UNSIGNED NOT NULL,
+    `targetUserID` BIGINT UNSIGNED NOT NULL,
     `action` INT NOT NULL,
 );
-CREATE TABLE `Matching`(
+
+CREATE TABLE `Matching` (
     `matchingID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `userA` BIGINT NOT NULL,
-    `userB` BIGINT NOT NULL,
-    `status` BIGINT NOT NULL,
+    `userA` BIGINT UNSIGNED NOT NULL,
+    `userB` BIGINT UNSIGNED NOT NULL,
+    `status` BIGINT NOT NULL
 );
-CREATE TABLE `Event`(
+
+CREATE TABLE `Event` (
     `eventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `eventName` VARCHAR(255) NOT NULL,
     `eventTime` TIME NOT NULL
 );
-CREATE TABLE `JoinEvent`(
+
+CREATE TABLE `JoinEvent` (
     `joinEventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `userID` BIGINT NOT NULL,
     `eventID` BIGINT NOT NULL,
 );
-CREATE TABLE `Message`(
+
+CREATE TABLE `Message` (
     `messageID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `matchingID` BIGINT,
-    `from` BIGINT NOT NULL,
+    `matchingID` BIGINT UNSIGNED NULL,
+    `fromUserID` BIGINT UNSIGNED NOT NULL,
     `time` TIME NOT NULL,
     `context` BIGINT NOT NULL
 );
