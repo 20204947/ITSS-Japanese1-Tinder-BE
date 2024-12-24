@@ -3,8 +3,13 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
+const { Server } = require("socket.io");
+const http = require("http");
+const Message = require("./models/message"); // Import model Message
 
 const app = express();
+const server = http.createServer(app);
+
 app.use(bodyParser.json());
 app.use(express.json());
 // Cấu hình CORS
@@ -32,9 +37,49 @@ app.use(
     })
 );
 
+// Cấu hình Socket.IO
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173", // URL frontend
+        methods: ["GET", "POST"],
+    },
+});
+
+io.on("connection", (socket) => {
+    console.log("User connected:", socket.id);
+
+    // Lắng nghe sự kiện gửi tin nhắn
+    socket.on("sendMessage", async (data) => {
+        try {
+            // Lưu tin nhắn vào cơ sở dữ liệu
+            const newMessage = await Message.create({
+                matchingID: data.matchingID,
+                from: data.from,
+                time: new Date(),
+                context: data.context,
+            });
+
+            // Gửi tin nhắn đến người nhận
+            io.to(data.receiver).emit("receiveMessage", newMessage);
+        } catch (error) {
+            console.error("Error saving message:", error);
+        }
+    });
+
+    // Tham gia vào room riêng cho user
+    socket.on("joinRoom", (userId) => {
+        socket.join(userId);
+        console.log(`${userId} joined the room`);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected:", socket.id);
+    });
+});
+
 app.use("/api/users", userRoutes);
 
 const PORT = 8888;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

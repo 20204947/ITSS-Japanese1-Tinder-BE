@@ -335,3 +335,37 @@ exports.likeOrDislike = async (req, res) => {
         res.status(500).json({ message: 'Error processing action', error: err.message });
     }
 };
+
+// Lấy danh sách những người đã matching
+exports.getMatchedUsers = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Tìm các matching records mà userId là userA hoặc userB
+        const matchings = await Matching.findAll({
+            where: {
+                [Op.or]: [
+                    { userA: userId },
+                    { userB: userId }
+                ],
+                status: 1 // Giả sử status 1 là đã matching
+            }
+        });
+
+        // Lấy danh sách userID của những người đã matching
+        const matchingUserIds = matchings.map(matching =>
+            matching.userA === parseInt(userId) ? matching.userB : matching.userA
+        );
+
+        // Tìm thông tin của những người đã matching
+        const matchingUsers = await User.findAll({
+            where: {
+                userID: matchingUserIds
+            }
+        });
+
+        res.status(200).json({ matchingUsers });
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching matching users" });
+    }
+};

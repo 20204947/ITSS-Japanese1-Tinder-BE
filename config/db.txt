@@ -24,8 +24,6 @@ CREATE TABLE `Action`(
     `userID` BIGINT NOT NULL,
     `targetUserID` BIGINT NOT NULL,
     `action` INT NOT NULL,
-    CONSTRAINT `action_userid_foreign` FOREIGN KEY(`userID`) REFERENCES `User`(`userID`),
-    CONSTRAINT `action_targetuserid_foreign` FOREIGN KEY(`targetUserID`) REFERENCES `User`(`userID`)
 );
 CREATE TABLE `Matching`(
     `matchingID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -42,8 +40,6 @@ CREATE TABLE `JoinEvent`(
     `joinEventID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `userID` BIGINT NOT NULL,
     `eventID` BIGINT NOT NULL,
-    CONSTRAINT `joinevent_userid_foreign` FOREIGN KEY(`userID`) REFERENCES `User`(`userID`),
-    CONSTRAINT `joinevent_eventid_foreign` FOREIGN KEY(`eventID`) REFERENCES `Event`(`eventID`)
 );
 CREATE TABLE `Message`(
     `messageID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -51,5 +47,4 @@ CREATE TABLE `Message`(
     `from` BIGINT NOT NULL,
     `time` TIME NOT NULL,
     `context` BIGINT NOT NULL
-    CONSTRAINT `message_matchingid_foreign` FOREIGN KEY(`matchingID`) REFERENCES `Matching`(`matchingID`)
 );
