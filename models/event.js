@@ -12,8 +12,17 @@ const Event = sequelize.define('Event', {
         allowNull: false
     },
     eventTime: {
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: false
+    },
+    eventDescription: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     }
 }, {
     tableName: 'Event',
