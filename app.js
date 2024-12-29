@@ -59,24 +59,24 @@ io.on("connection", (socket) => {
                 context: data.context,
             });
 
-            // Gửi tin nhắn đến người nhận
-            io.to(data.receiver).emit("receiveMessage", newMessage);
+            // Gửi tin nhắn đến phòng theo matchingID
+            io.to(data.matchingID).emit("receiveMessage", newMessage);
         } catch (error) {
             console.error("Error saving message:", error);
         }
     });
 
-    socket.on("joinRoom", (userId) => {
-        const rooms = Array.from(socket.rooms);
-        rooms.forEach((room) => {
-            if (room !== socket.id) {
-                socket.leave(room);
-            }
-        });
-        socket.join(userId);
-        console.log(`${userId} joined the room`);
+    // Tham gia vào phòng theo matchingID
+    socket.on("joinRoom", (matchingID) => {
+        socket.join(matchingID);
+        console.log(`User ${socket.id} joined room ${matchingID}`);
     });
 
+    // Rời phòng theo matchingID
+    socket.on("leaveRoom", (matchingID) => {
+        socket.leave(matchingID);
+        console.log(`User ${socket.id} left room ${matchingID}`);
+    });
 
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
