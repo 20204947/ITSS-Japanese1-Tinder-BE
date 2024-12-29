@@ -20,7 +20,7 @@ const Message = sequelize.define('Message', {
         allowNull: false
     },
     context: {
-        type: DataTypes.BIGINT, // Nếu context là văn bản, nên chuyển thành DataTypes.TEXT
+        type: DataTypes.TEXT, // Nếu context là văn bản, nên chuyển thành DataTypes.TEXT
         allowNull: false
     }
 }, {

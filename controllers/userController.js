@@ -364,7 +364,19 @@ exports.getMatchedUsers = async (req, res) => {
             }
         });
 
-        res.status(200).json({ matchingUsers });
+        // Thêm matchingID vào matchingUsers
+        const matchingUsersWithId = matchingUsers.map(user => {
+            const matching = matchings.find(matching =>
+                (matching.userA === userId && matching.userB === user.userID) ||
+                (matching.userB === userId && matching.userA === user.userID)
+            );
+            return {
+                ...user.toJSON(),
+                matchingID: matching.matchingID
+            };
+        });
+
+        res.status(200).json({ matchingUsers: matchingUsersWithId });
     } catch (error) {
         res.status(500).json({ error: "Error fetching matching users" });
     }

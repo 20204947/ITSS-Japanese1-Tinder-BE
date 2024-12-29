@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
             const newMessage = await Message.create({
                 matchingID: data.matchingID,
                 from: data.from,
-                time: new Date(),
+                time: data.time,
                 context: data.context,
             });
 
@@ -66,11 +66,17 @@ io.on("connection", (socket) => {
         }
     });
 
-    // Tham gia vào room riêng cho user
     socket.on("joinRoom", (userId) => {
+        const rooms = Array.from(socket.rooms);
+        rooms.forEach((room) => {
+            if (room !== socket.id) {
+                socket.leave(room);
+            }
+        });
         socket.join(userId);
         console.log(`${userId} joined the room`);
     });
+
 
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
